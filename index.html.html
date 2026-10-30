@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obrolan 10 Menit</title>
+<style>
+  :root {
+    --color-fg: #2a2420; --color-fg-muted: #6b5f58; --color-bg: #fbf7f2;
+    --color-panel: #fffdfa; --color-border-line: #e8dfd6;
+    --font-anthropic-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-anthropic-serif: Georgia, "Times New Roman", serif;
+    --cds-dur-slow: .4s; --cds-ease-out: cubic-bezier(.2, .7, .2, 1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --color-fg: #f3ece6; --color-fg-muted: #b9ada4; --color-bg: #1f1b19; --color-panel: #2a2522; --color-border-line: #3d3632; }
+  }
+  html, body { margin: 0; background: var(--color-bg); }
+  body { padding: 0 1rem; }
+</style>
+</head>
+<body>
+<style>
+  
+  .ob {
+    --ringan: #a9d6bd;
+    --sedang: #f1cf93;
+    --dalam: #eaaec0;
+    --ink: #2a2420;
+    max-width: 34rem;
+    margin-inline: auto;
+    padding-block: 1.25rem 2.5rem;
+    font-family: var(--font-anthropic-sans);
+    color: var(--color-fg);
+  }
+  .ob h1 {
+    margin: 0 0 .5rem;
+    font-family: var(--font-anthropic-serif);
+    font-weight: 400;
+    font-size: clamp(2.1rem, 9vw, 2.9rem);
+    line-height: 1.15;
+    text-align: center;
+  }
+  .ob .sapa {
+    margin: 0 auto 1.5rem;
+    max-width: 26rem;
+    text-align: center;
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--color-fg-muted);
+  }
+  .ob .langkah {
+    margin: 0 0 .6rem;
+    font-size: 1.05rem;
+    font-weight: 500;
+    text-align: center;
+  }
+  .ob .pilihan {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .6rem;
+    margin-bottom: 1.25rem;
+  }
+  .ob .tingkat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .15rem;
+    min-height: 4.5rem;
+    padding: .6rem .2rem;
+    border: 2px solid transparent;
+    border-radius: 1.1rem;
+    background: var(--warna);
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+    opacity: .72;
+    transition: opacity .15s, transform .15s, border-color .15s;
+  }
+  .ob .tingkat .nama { font-size: clamp(.95rem, 4.2vw, 1.25rem); font-weight: 600; }
+  .ob .tingkat .ket { font-size: .95rem; }
+  .ob .tingkat:hover { opacity: .9; }
+  .ob .tingkat[aria-pressed="true"] {
+    opacity: 1;
+    border-color: var(--ink);
+    transform: translateY(-2px);
+  }
+  .ob .ringan { --warna: var(--ringan); }
+  .ob .sedang { --warna: var(--sedang); }
+  .ob .dalam { --warna: var(--dalam); }
+  .ob .panggung {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 17rem;
+    padding: 1.75rem 1.5rem;
+    border-radius: 1.5rem;
+    border: 1px solid var(--color-border-line);
+    background: var(--color-panel);
+  }
+  .ob .kartu {
+    background: none;
+    border: 0;
+    text-align: center;
+  }
+  .ob .kartu[hidden], .ob .selamat[hidden] { display: none; }
+  .ob .label {
+    margin: 0 0 .9rem;
+    font-size: .95rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--color-fg-muted);
+  }
+  .ob .tanya {
+    margin: 0;
+    font-family: var(--font-anthropic-serif);
+    font-size: clamp(1.6rem, 6.4vw, 2.05rem);
+    line-height: 1.4;
+  }
+  .ob .selamat { text-align: center; }
+  .ob .selamat .tanya { font-size: clamp(1.4rem, 5.6vw, 1.75rem); color: var(--color-fg-muted); }
+  .ob .panggung.ringan { background: color-mix(in srgb, var(--ringan) 24%, var(--color-panel)); border-color: color-mix(in srgb, var(--ringan) 60%, transparent); }
+  .ob .panggung.sedang { background: color-mix(in srgb, var(--sedang) 24%, var(--color-panel)); border-color: color-mix(in srgb, var(--sedang) 60%, transparent); }
+  .ob .panggung.dalam { background: color-mix(in srgb, var(--dalam) 24%, var(--color-panel)); border-color: color-mix(in srgb, var(--dalam) 60%, transparent); }
+  .ob .berikutnya {
+    display: block;
+    width: 100%;
+    min-height: 4rem;
+    margin-top: 1.1rem;
+    border: 0;
+    border-radius: 1.2rem;
+    background: var(--warna, var(--color-border-line));
+    color: var(--ink);
+    font: inherit;
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .ob .berikutnya:disabled { opacity: .45; cursor: default; }
+  .ob .berikutnya:not(:disabled):active { transform: scale(.985); }
+  .ob .tips {
+    margin: 1.1rem 0 0;
+    text-align: center;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: var(--color-fg-muted);
+  }
+  .ob button:focus-visible { outline: 3px solid var(--color-fg); outline-offset: 2px; }
+  .ob [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes ob-muncul { from { opacity: 0; transform: translateY(.6rem); } to { opacity: 1; transform: none; } }
+    .ob .kartu:not([hidden]), .ob .selamat:not([hidden]) {
+      animation: ob-muncul var(--cds-dur-slow) var(--cds-ease-out);
+    }
+  }
+</style>
+
+<div class="ob" id="obrolan">
+  <h1>Obrolan 10 Menit</h1>
+  <p class="sapa">Taruh dulu HP-nya, duduk deketan, terus ambil satu kartu. Gantian jawab ya, santai aja.</p>
+
+  <p class="langkah" id="langkah">Lagi di tahap mana kita malam ini?</p>
+  <div class="pilihan" role="group" aria-labelledby="langkah">
+    <button type="button" class="tingkat ringan" data-level="ringan" aria-pressed="false"><span class="nama">Pacaran</span><span class="ket">Santai</span></button>
+    <button type="button" class="tingkat sedang" data-level="sedang" aria-pressed="false"><span class="nama">Tunangan</span><span class="ket">Hangat</span></button>
+    <button type="button" class="tingkat dalam" data-level="dalam" aria-pressed="false"><span class="nama">Pernikahan</span><span class="ket">Jujur</span></button>
+  </div>
+
+  <div class="panggung" id="panggung" aria-live="polite">
+    <div class="selamat" id="selamat">
+      <p class="tanya">Pilih satu tahap di atas, nanti satu pertanyaan muncul buat kita berdua.</p>
+    </div>
+
+    <div class="deck" data-level="ringan">
+      <article class="kartu" hidden><p class="label">Pacaran</p><p class="tanya">Ada hal kecil apa hari ini yang bikin kamu senyum?</p></article>
+      <article class="kartu" hidden><p class="label">Pacaran</p><p class="tanya">Weekend ini kamu mau kita masak atau makan apa berdua?</p></article>
+      <article class="kartu" hidden><p class="label">Pacaran</p><p class="tanya">Kalau besok kita libur seharian, kamu mau kita ngapain?</p></article>
+      <article class="kartu" hidden><p class="label">Pacaran</p><p class="tanya">Lagu apa yang lagi sering kamu putar akhir-akhir ini?</p></article>
+      <article class="kartu" hidden><p class="label">Pacaran</p><p class="tanya">Kebiasaan kecilku apa yang diam-diam kamu suka?</p></article>
+      <article class="kartu" hidden><p class="label">Pacaran</p><p class="tanya">Kamu mau ke mana bareng aku, kalau cuma sehari?</p></article>
+      <article class="kartu" hidden><p class="label">Pacaran</p><p class="tanya">Film atau serial apa yang mau kita tonton berdua habis ini?</p></article>
+      <article class="kartu" hidden><p class="label">Pacaran</p><p class="tanya">Kenangan lucu apa dari kita yang selalu bikin kamu ketawa kalau diingat?</p></article>
+      <article class="kartu" hidden><p class="label">Pacaran</p><p class="tanya">Kalau hari ini bisa diulang, bagian mana yang mau kamu nikmati lebih lama?</p></article>
+      <article class="kartu" hidden><p class="label">Pacaran</p><p class="tanya">Hal sederhana apa yang bisa aku lakuin biar harimu terasa lebih ringan?</p></article>
+    </div>
+
+    <div class="deck" data-level="sedang">
+      <article class="kartu" hidden><p class="label">Tunangan</p><p class="tanya">Kapan akhir-akhir ini kamu ngerasa paling deket sama aku?</p></article>
+      <article class="kartu" hidden><p class="label">Tunangan</p><p class="tanya">Apa yang paling kamu syukuri dari hubungan kita?</p></article>
+      <article class="kartu" hidden><p class="label">Tunangan</p><p class="tanya">Kebiasaan baik apa yang mau kita mulai bareng-bareng?</p></article>
+      <article class="kartu" hidden><p class="label">Tunangan</p><p class="tanya">Aku nunjukin sayang lewat cara apa yang paling kerasa buat kamu?</p></article>
+      <article class="kartu" hidden><p class="label">Tunangan</p><p class="tanya">Lagi ada yang bikin kamu capek, tapi belum sempat kamu ceritain ke aku?</p></article>
+      <article class="kartu" hidden><p class="label">Tunangan</p><p class="tanya">Mimpi apa yang mau kita kejar bareng dalam beberapa tahun ke depan?</p></article>
+      <article class="kartu" hidden><p class="label">Tunangan</p><p class="tanya">Nanti kalau udah serumah, gimana caranya kita bagi tugas rumah biar terasa adil dan nggak berat?</p></article>
+      <article class="kartu" hidden><p class="label">Tunangan</p><p class="tanya">Menurutmu, caraku ngadepin masalah udah bagus di bagian mana, dan bagian mana yang masih bisa aku perbaiki?</p></article>
+      <article class="kartu" hidden><p class="label">Tunangan</p><p class="tanya">Pas kita beda pendapat, apa yang paling bikin kamu merasa didengar?</p></article>
+      <article class="kartu" hidden><p class="label">Tunangan</p><p class="tanya">Momen apa dari perjalanan kita sejauh ini yang mau kamu ulang lagi?</p></article>
+    </div>
+
+    <div class="deck" data-level="dalam">
+      <article class="kartu" hidden><p class="label">Pernikahan</p><p class="tanya">Apa yang mau kamu rasain lebih sering dalam pernikahan kita?</p></article>
+      <article class="kartu" hidden><p class="label">Pernikahan</p><p class="tanya">Ada kekhawatiran yang kamu simpan sendiri dan mau kamu bagi ke aku?</p></article>
+      <article class="kartu" hidden><p class="label">Pernikahan</p><p class="tanya">Kapan kamu pernah ngerasa aku kurang ngerti kamu, dan waktu itu kamu butuh apa?</p></article>
+      <article class="kartu" hidden><p class="label">Pernikahan</p><p class="tanya">Ada luka kecil atau omonganku dulu yang mau kamu bahas pelan-pelan sama aku?</p></article>
+      <article class="kartu" hidden><p class="label">Pernikahan</p><p class="tanya">Kamu ngerasa aman sama aku karena apa, dan apa lagi yang masih mau kamu rasain?</p></article>
+      <article class="kartu" hidden><p class="label">Pernikahan</p><p class="tanya">Kita mau dikenang kayak gimana sama anak, keluarga, dan orang-orang terdekat?</p></article>
+      <article class="kartu" hidden><p class="label">Pernikahan</p><p class="tanya">Apa yang mau kamu maafin dari dirimu sendiri, dan gimana aku bisa nemenin kamu?</p></article>
+      <article class="kartu" hidden><p class="label">Pernikahan</p><p class="tanya">Kamu bayangin kita menua bareng itu kayak gimana?</p></article>
+      <article class="kartu" hidden><p class="label">Pernikahan</p><p class="tanya">Apa yang selama ini belum berani kamu minta dari aku?</p></article>
+      <article class="kartu" hidden><p class="label">Pernikahan</p><p class="tanya">Apa yang paling kamu syukuri dari aku, tapi belum pernah sempat kamu bilang langsung?</p></article>
+    </div>
+  </div>
+
+  <button type="button" class="berikutnya" id="berikutnya" disabled>Kartu Berikutnya</button>
+  <p class="tips">Nggak ada jawaban yang salah. Dengerin aja pelan-pelan.</p>
+</div>
+
+<script>
+  (function () {
+    const root = document.getElementById('obrolan');
+    if (!root) return;
+    const tombol = root.querySelectorAll('.tingkat');
+    const panggung = document.getElementById('panggung');
+    const selamat = document.getElementById('selamat');
+    const lanjut = document.getElementById('berikutnya');
+    const semuaKartu = root.querySelectorAll('.kartu');
+    const tingkatan = ['ringan', 'sedang', 'dalam'];
+    const antrean = {};
+    let aktif = null;
+    let terakhir = null;
+
+    const acak = (n) => {
+      const a = Array.from({ length: n }, (_, i) => i);
+      for (let i = n - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+
+    const kartuTingkat = (level) => root.querySelectorAll('.deck[data-level="' + level + '"] .kartu');
+
+    const ambil = (level) => {
+      const kartu = kartuTingkat(level);
+      if (!kartu.length) return null;
+      if (!antrean[level] || !antrean[level].length) {
+        antrean[level] = acak(kartu.length);
+        if (kartu.length > 1 && kartu[antrean[level][0]] === terakhir) antrean[level].push(antrean[level].shift());
+      }
+      return kartu[antrean[level].shift()];
+    };
+
+    const tampil = (level) => {
+      const kartu = ambil(level);
+      if (!kartu) return;
+      semuaKartu.forEach((k) => { k.hidden = true; });
+      selamat.hidden = true;
+      kartu.hidden = false;
+      terakhir = kartu;
+    };
+
+    const pilih = (level) => {
+      aktif = level;
+      tombol.forEach((b) => b.setAttribute('aria-pressed', b.dataset.level === level ? 'true' : 'false'));
+      tingkatan.forEach((t) => {
+        panggung.classList.toggle(t, t === level);
+        lanjut.classList.toggle(t, t === level);
+      });
+      lanjut.disabled = false;
+      tampil(level);
+    };
+
+    tombol.forEach((b) => b.addEventListener('click', () => pilih(b.dataset.level)));
+    lanjut.addEventListener('click', () => { if (aktif) tampil(aktif); });
+  })();
+</script>
+
+</body>
+</html>
